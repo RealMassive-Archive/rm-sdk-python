@@ -24,8 +24,9 @@ class Rest(object):
 
     def __call__(self, *args):
         path = map(str, args)
-        self._path.extend(path)
-        return self._new()
+        new = self._new()
+        new._path.extend(path)
+        return new
 
     def __getattr__(self, name):
         if name.startswith('__'):
