@@ -5,5 +5,5 @@ setup(
     name="realmassive_sdk_python",
     version="0.1",
     description="RealMassive's Python SDK",
-    packages=["realmassive"],
+    packages=["realmassive_sdk"],
 )
