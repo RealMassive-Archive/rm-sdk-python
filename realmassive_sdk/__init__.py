@@ -1,20 +1,19 @@
 
 # NOTE: not fit for public distribution until we have a public auth client
-from authclient import Client
+from authclient import Client as AuthClient
 from authclient.config import Config as AuthConfig
 
 from .config import Config
 from .rest import Rest
 
 
-class Requester(object):
-    """ Make requests through a given client.
+class AuthRequester(object):
+    """ Wraps the RealMassive AuthClient with HTTP request methods.
     """
+    def __init__(self, user=None, password=None, config=None):
+        self.client = AuthClient(user, password, config=config)
 
-    def __init__(self, client):
-        self.client = client
-
-    def _request(self, method, *args, **kwargs):
+    def _request(self, method, **kwargs):
         url = kwargs.pop("url")
         request = dict(method=method, url=url, **kwargs)
         return self.client.request(request)
@@ -41,24 +40,21 @@ class Requester(object):
         return self._request("PUT", **kwargs)
 
 
-
 class RealMassive(Rest):
     """ The RealMassive Python SDK makes authenticated requests!
 
-        1) Set your config environment variables or object
-        2) Initialize this class
+        1) Pass in the RealMassive API base endpoint as `domain`
+        2) Pass in a HTTP request client as `requester`
         3) Make requests!
     """
-    def __init__(self, domain=None, config=Config):
-        if not domain:
-            domain = config.ENDPOINT
 
-        # Setup Auth
-        AuthConfig.ENDPOINT = config.AUTH_ENDPOINT
-        auth_client = Client(
-            config.USER,
-            config.PASSWORD,
-            config=AuthConfig
-        )
-        requester = Requester(auth_client)
+    def __init__(self, domain=Config.ENDPOINT, requester=None):
+        if not requester:
+            AuthConfig.ENDPOINT = Config.AUTH_ENDPOINT
+            requester = AuthRequester(
+                user=Config.USER,
+                password=Config.PASSWORD,
+                config=AuthConfig
+            )
+
         super(RealMassive, self).__init__(path=domain, requester=requester)
