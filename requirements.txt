@@ -1,2 +1,1 @@
-git+ssh://github.com/RealMassive/auth-client.git@master
-PyJWT == 1.4.0
+git+ssh://github.com/RealMassive/auth-client.git@v1.1
