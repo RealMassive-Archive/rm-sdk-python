@@ -15,8 +15,10 @@ class AuthRequester(object):
 
     def _request(self, method, **kwargs):
         url = kwargs.pop("url")
+        superuser = kwargs.pop("superuser", False)
+        service_request = kwargs.pop("service_request", False)
         request = dict(method=method, url=url, **kwargs)
-        return self.client.request(request)
+        return self.client.request(request, superuser=superuser, service_request=service_request)
 
     def delete(self, **kwargs):
         return self._request("DELETE", **kwargs)
